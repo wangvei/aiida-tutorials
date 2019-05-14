@@ -20,53 +20,75 @@ The software on this VM is based on `Quantum Mobile
 pre-configured AiiDA installation as well as some test data for the tutorial.
 
 .. note::
-  
-   If you decide to work in pairs, one of you should forward their credentials
-   to the other and you should both use the same IP address and ssh key. 
-   Since you will be sharing the VM and user account, be careful not to delete
-   the work of your colleague.
+   If you decide to work in pairs, one of you should forward their
+   credentials to the other and you should both use the same IP address and
+   ssh key. Since you will be sharing the VM and user account, be careful not
+   to delete the work of your colleague.
 
 Linux and MacOS
 ~~~~~~~~~~~~~~~
 
+It's recommended for you to place the ssh key you received in a folder
+dedicated to your ssh configuration, to do so:
+
 -  If not already present, create a ``.ssh`` directory in your home
    (``mkdir ~/.ssh``), and set its permissions: ``chmod 700 ~/.ssh``
 
--  Copy the two keys ``aiida_tutorial_NUM`` and ``aiida_tutorial_NUM.pub`` 
-   in the ``~/.ssh`` directory 
+-  Copy the two keys ``aiida_tutorial_NUM`` and ``aiida_tutorial_NUM.pub``
+   in the ``~/.ssh`` directory
 
 -  Set the correct permissions on the private key:
-   ``chmod 600 ~/.ssh/aiida_tutorial_NUM``.
-   You can check check with ``ls -l`` that the permissions of this file are now ``-rw-------``.
+   ``chmod 600 ~/.ssh/aiida_tutorial_NUM``. You can check check with ``ls -l``
+   that the permissions of this file are now ``-rw-------``.
 
--  Create (or modify) the ``~/.ssh/config`` file, adding the following lines:
+After that ssh key is in place, you can go two routes, the first through an
+ssh configuration file specific to the IP address you are going to connect, or,
+using a command in your shell with several configuration options.
 
-   .. code:: console
+If you prefer the configuration route, first you want to add the following code
+block to your ``~/.ssh/condfig`` file,
 
-       Host aiidatutorial
-         Hostname IP_ADDRESS
-         User aiida
-         IdentityFile ~/.ssh/aiida_tutorial_NUM
-         ForwardX11 yes
-         ForwardX11Trusted yes
-         LocalForward 8888 localhost:8888
+.. code::
 
-   where you replace ``IP_ADDRESS`` with the IP address provided to you.
+     Host aiidatutorial
+          Hostname 34.242.168.15
+          User max
+          IdentityFile ~/.ssh/aiida-tutorial-max.pem
+          ForwardX11 yes
+          ForwardX11Trusted yes
+          LocalForward 8888 localhost:8888
 
--  You should now be able to ``ssh`` to your virtual machine using simply
+Remember to update the ``Hostname`` IP address, for the one you received, after
+adding this configuration you can connect to the server using,
 
-   .. code:: console
+.. code:: console
 
-         ssh -X -C aiidatutorial
+     ssh aiidatutorial
 
+All the options (user, x11 forwarding, etc) will be implied from this
+configuration file using that simple command.
 
-Connecting with ``-X`` (sometimes ``-Y`` is needed instead) allows you
-to run graphical programs such as ``xmgrace`` or ``gnuplot`` on the virtual machine,
-with SSH *forwarding* the graphical output to your computer (can be slow).
+If you instead prefer to use a copy-paste ready command, you can skip the
+configuration block and instead use the following command straight into your
+console:
+
+.. code:: console
+
+     ssh \
+          -i ~/.ssh/aiida-tutorial-max.pem \
+          -L 8888:localhost:8888 \
+          -X -C \
+          max@34.242.168.15
+
+replacing the IP address in the last portion of the command by your own.
+
+x11 forwarding allows you to run graphical programs such as ``xmgrace`` or
+``gnuplot`` on the virtual machine, with SSH *forwarding* the graphical
+output to your computer (can be slow).
 
 .. note::
 
-   On MacOS you may need to install `XQuartz <https://xquartz.macosforge.org/landing/>`_ 
+   On MacOS you may need to install `XQuartz <https://xquartz.macosforge.org/landing/>`_
    in order to use X-forwarding.
 
 Windows
@@ -77,7 +99,7 @@ If you're running Windows 10, you may want to consider `installing the Windows S
 -  Install the `PuTTY SSH client <https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html>`_.
 
 -  Run PuTTYGen, load the ``aiida_tutorial_NN`` private key (button
-   ``"Load"``). You may need to choose to show “All files (\*.\*)”, 
+   ``"Load"``). You may need to choose to show “All files (\*.\*)”,
    and select the file without any extension (Type: File).
 
 -  In the same window, click on “Save private Key”, and save the key
@@ -125,10 +147,10 @@ allowing you to use AiiDA. Now type in the same shell:
      jupyter notebook --no-browser
 
 This will run a server with a web application called ``jupyter``, which
-is used to create interactive python notebooks. 
+is used to create interactive python notebooks.
 In order to connect to the jupyter notebook server:
 
- - copy the URL that has been printed to the terminal (similar to ``http://localhost:8888/?token=2a3ba37cd1...``)  
+ - copy the URL that has been printed to the terminal (similar to ``http://localhost:8888/?token=2a3ba37cd1...``)
  - open a web browser **on your laptop** and paste the URL
  - You will see a list of folders on your personal VM.
 
@@ -138,7 +160,7 @@ terminal is the one we will actually use in this tutorial.
 
 .. note::
 
-   Our SSH configuration assumes that ``jupyter`` will serve the notebooks on port 8888. 
+   Our SSH configuration assumes that ``jupyter`` will serve the notebooks on port 8888.
    If you want to serve notebooks on different ports, you'll also need to adjust
    the SSH configuration.
 
